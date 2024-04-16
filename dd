@@ -1,0 +1,51 @@
+mouse.Button1Down:Connect(function()
+	if currentMoveToConnection then
+		currentMoveToConnection:Disconnect()
+	end
+
+	local targetPosition = mouse.Hit.p
+	local targetPart = mouse.Target
+	if targetPart then
+		--------------MOVE TO------------------
+		local direction = (targetPosition - character.HumanoidRootPart.Position).unit
+		currentMoveToConnection = humanoid.MoveToFinished:Connect(function(reached)
+			if reached then
+				currentMoveToConnection:Disconnect()
+			end
+		end)
+		humanoid:MoveTo(targetPosition)
+
+		----------VFX PART-----------------
+		local effect = assets:WaitForChild('VFX'):WaitForChild('WalkVFX'):Clone()
+		effect.Position = targetPosition
+		effect.Anchored = true
+		effect.CanCollide = false
+		effect.Parent = game.Workspace
+		currentEffect = effect
+
+		local arrow1 = effect.Arrow1.Arrow
+		local arrow2 = effect.Arrow2.Arrow
+		local arrow3 = effect.Arrow3.Arrow
+		local arrow4 = effect.Arrow4.Arrow
+
+		local dot = effect.Attachment.dot
+		local circle = effect.Attachment.Circle
+
+		arrow1:Emit(3)
+		arrow2:Emit(3)
+		arrow3:Emit(3)
+		arrow4:Emit(3)
+		dot:Emit(1)
+		wait(0.6)
+		circle:Emit(1)
+
+		wait(2)
+		effect:Destroy()
+
+		effect.Touched:Connect(function(hit)
+			if hit.Parent == character then
+				effect:Destroy()
+			end
+		end)
+	end
+end)
